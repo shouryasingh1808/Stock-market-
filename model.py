@@ -12,11 +12,14 @@ from data import fetch_stock_data, add_features
 def train_model(stock_name= "^NSEI"):
     if os.path.exists("model.pkl"):
         print("Model already exists! Loading starts..")
-        return joblib.load("moedl.pkl")
+        return joblib.load("model.pkl")
     # Get the data--
     data = fetch_stock_data(stock_name)
     data = add_features(data)
-    
+
+    data["Next open"] = data["Open"].shift(-1)
+    data.dropna(inplace=True)
+
     # Define feature and target
     features = ["MA_20", "MA_50", "Yesterday", "Last_week", "RSI"]
     target = "Close"
